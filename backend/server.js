@@ -73,20 +73,26 @@ app.get('/health', (req, res) => {
   res.json({ ok: true });
 });
 
-async function start() {
-  try {
-    await db.initDb();
-    console.log('Database ready.');
-  } catch (e) {
-    console.error('Database init failed:', e.message);
-    process.exit(1);
+// Export for Vercel serverless
+module.exports = app;
+
+// Start server for local development
+if (require.main === module) {
+  async function start() {
+    try {
+      await db.initDb();
+      console.log('Database ready.');
+    } catch (e) {
+      console.error('Database init failed:', e.message);
+      process.exit(1);
+    }
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
   }
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+
+  start().catch((err) => {
+    console.error(err);
+    process.exit(1);
   });
 }
-
-start().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});

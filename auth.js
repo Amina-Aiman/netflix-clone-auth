@@ -1,7 +1,14 @@
 (function () {
   'use strict';
 
-  const API_BASE = 'http://localhost:5001';
+  // Auto-detect environment: use localhost for local dev, deployed URL for production
+  const isLocalhost = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.protocol === 'file:';
+  // Use same Vercel domain for backend - API routes are at /api/login, /api/register
+  const API_BASE = isLocalhost 
+    ? 'http://localhost:5001' 
+    : window.location.origin + '/api'; // Vercel backend at /api routes
   const LOGIN_FLAG = 'isLoggedIn';
 
   window.auth = {
