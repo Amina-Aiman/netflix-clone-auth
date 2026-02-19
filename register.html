@@ -202,6 +202,9 @@
   </div>
   <script src="auth.js"></script>
   <script>
+    if (localStorage.getItem('isLoggedIn') === 'true') { window.location.replace('index.html'); }
+  </script>
+  <script>
     (function () {
       var form = document.getElementById('register-form');
       var message = document.getElementById('message');
