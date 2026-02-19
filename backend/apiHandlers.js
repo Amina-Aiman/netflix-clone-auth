@@ -32,7 +32,7 @@ async function handleLogin(body) {
   if (decoded !== String(password)) {
     return { status: 401, json: { success: false, message: 'Invalid identifier or password.' } };
   }
-  return { status: 200, json: { success: true, message: 'Login successful.', user: { id: user.id, uname: user.uname, email: user.email } };
+  return { status: 200, json: { success: true, message: 'Login successful.', user: { id: user.id, uname: user.uname, email: user.email } } };
 }
 
 async function handleRegister(body) {
