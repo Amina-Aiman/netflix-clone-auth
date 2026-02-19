@@ -30,14 +30,30 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      }).then(function (res) { return res.json(); });
+      }).then(function (res) {
+        return res.text().then(function (text) {
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            throw new Error(res.status === 404 ? 'API not found.' : (text || 'Request failed'));
+          }
+        });
+      });
     },
     login: function (identifier, password) {
       return fetch(API_BASE + '/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifier: identifier, password: password })
-      }).then(function (res) { return res.json(); });
+      }).then(function (res) {
+        return res.text().then(function (text) {
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            throw new Error(res.status === 404 ? 'API not found. Check deployment.' : (text || 'Request failed'));
+          }
+        });
+      });
     }
   };
 })();

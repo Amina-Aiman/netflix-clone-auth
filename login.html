@@ -281,8 +281,8 @@
               submitBtn.disabled = false;
             }
           })
-          .catch(function () {
-            showMessage('Network error. Please check your connection and try again.', true);
+          .catch(function (err) {
+            showMessage(err && err.message ? err.message : 'Network error. Please check your connection and try again.', true);
             submitBtn.disabled = false;
           });
       });

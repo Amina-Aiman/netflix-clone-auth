@@ -18,14 +18,7 @@ module.exports = async function handler(req, res) {
   }
   try {
     await initDb();
-    let body = req.body;
-    if (body === undefined || body === null) {
-      const chunks = [];
-      for await (const chunk of req) chunks.push(chunk);
-      body = JSON.parse(Buffer.concat(chunks).toString() || '{}');
-    }
-    if (typeof body === 'string') body = JSON.parse(body || '{}');
-    if (!body || typeof body !== 'object') body = {};
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
     const { status, json } = await handleLogin(body);
     res.status(status).json(json);
   } catch (err) {
