@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - Netflix Clone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+    .panel-left {
+      flex: 1;
+      min-width: 320px;
+      background: linear-gradient(135deg, #e8f4fc 0%, #c5e3f7 50%, #a8d4f0 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel-left::before {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      top: -120px; right: -120px;
+    }
+    .panel-left::after {
+      content: '';
+      position: absolute;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      bottom: -60px; left: -60px;
+    }
+    .welcome-text {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: #1a365d;
+    }
+    .welcome-text h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .welcome-text p {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #2c5282;
+      opacity: 0.9;
+    }
+    .panel-right {
+      width: 100%;
+      max-width: 460px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px 56px;
+      box-shadow: -8px 0 48px rgba(0,0,0,0.06);
+    }
+    .form-header {
+      margin-bottom: 32px;
+    }
+    .form-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a202c;
+      letter-spacing: -0.02em;
+    }
+    .tabs {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .tabs span {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #718096;
+      padding-bottom: 12px;
+      cursor: default;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .tabs span.active {
+      color: #2b6cb0;
+      border-bottom-color: #2b6cb0;
+    }
+    .input-wrap {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .input-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: #a0aec0;
+      pointer-events: none;
+    }
+    .input-wrap input {
+      width: 100%;
+      padding: 14px 14px 14px 46px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #f7fafc;
+      color: #1a202c;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .input-wrap input::placeholder { color: #a0aec0; }
+    .input-wrap input:focus {
+      outline: none;
+      border-color: #63b3ed;
+      background: #fff;
+    }
+    .forgot-row {
+      text-align: right;
+      margin-bottom: 24px;
+    }
+    .forgot-row a {
+      font-size: 0.875rem;
+      color: #2b6cb0;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .forgot-row a:hover { text-decoration: underline; }
+    .btn-continue {
+      width: 100%;
+      padding: 14px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: #fff;
+      background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.05s;
+      box-shadow: 0 4px 14px rgba(45, 108, 176, 0.35);
+    }
+    .btn-continue:hover { opacity: 0.95; }
+    .btn-continue:active { transform: scale(0.99); }
+    .btn-continue:disabled { opacity: 0.6; cursor: not-allowed; }
+    .message {
+      margin-top: 16px;
+      font-size: 0.875rem;
+      text-align: center;
+      min-height: 20px;
+    }
+    .message.error { color: #e53e3e; }
+    .message.success { color: #38a169; }
+    .signup-row {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #718096;
+    }
+    .signup-row a {
+      color: #2b6cb0;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .signup-row a:hover { text-decoration: underline; }
+    .logout-row {
+      margin-top: 16px;
+      text-align: center;
+    }
+    .logout-row a {
+      font-size: 0.8rem;
+      color: #a0aec0;
+      text-decoration: none;
+    }
+    .logout-row a:hover { color: #718096; }
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .panel-left { min-height: 200px; padding: 32px; }
+      .panel-right { max-width: 100%; padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="panel-left">
+    <div class="welcome-text">
+      <h2>Welcome back</h2>
+      <p>Sign in to continue to your account</p>
+    </div>
+  </div>
+  <div class="panel-right">
+    <div class="form-header">
+      <h1>Login your account!</h1>
+    </div>
+    <div class="tabs">
+      <span class="active">E-mail</span>
+      <span>Mobile Number</span>
+    </div>
+    <form id="login-form">
+      <div class="input-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+        </svg>
+        <input type="text" id="identifier" name="identifier" placeholder="Email or phone number" required autocomplete="username">
+      </div>
+      <div class="input-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+        <input type="password" id="password" name="password" placeholder="Password" required autocomplete="current-password">
+      </div>
+      <div class="forgot-row">
+        <a href="#">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn-continue" id="submit-btn">Continue</button>
+    </form>
+    <div class="message" id="message" role="alert"></div>
+    <div class="signup-row">
+      Don't have an account? <a href="register.html">Sign up</a>
+    </div>
+    <div class="logout-row">
+      <a href="#" id="logout-link">Clear login state</a>
+    </div>
+  </div>
+  <script src="auth.js"></script>
+  <script>
+    (function () {
+      var form = document.getElementById('login-form');
+      var message = document.getElementById('message');
+      var submitBtn = document.getElementById('submit-btn');
+      var logoutLink = document.getElementById('logout-link');
+
+      function showMessage(text, isError) {
+        message.textContent = text;
+        message.className = 'message ' + (isError ? 'error' : 'success');
+      }
+
+      logoutLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        window.auth.logout();
+        showMessage('You are signed out.', false);
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        message.textContent = '';
+        message.className = 'message';
+        var identifier = document.getElementById('identifier').value.trim();
+        var password = document.getElementById('password').value;
+
+        if (!identifier || !password) {
+          showMessage('Please enter identifier and password.', true);
+          return;
+        }
+
+        submitBtn.disabled = true;
+        window.auth.login(identifier, password)
+          .then(function (data) {
+            if (data.success) {
+              window.auth.setLoggedIn(true);
+              showMessage('Success. Redirecting...', false);
+              setTimeout(function () {
+                window.location.href = 'index.html';
+              }, 500);
+            } else {
+              showMessage(data.message || 'Invalid identifier or password.', true);
+              submitBtn.disabled = false;
+            }
+          })
+          .catch(function () {
+            showMessage('Network error. Is the backend running on port 5000?', true);
+            submitBtn.disabled = false;
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

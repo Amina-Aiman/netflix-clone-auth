@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Clone - Watch TV Shows Online, Watch Movies Online</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <script>
+      if (localStorage.getItem('isLoggedIn') !== 'true') { window.location.replace('login.html'); }
+    </script>
+    <!-- Fixed Navbar - Netflix style -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">NETFLIX</div>
+            <div class="nav-center">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search-input" placeholder="Search movies, TV shows..." autocomplete="off">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <div class="search-results" id="search-results"></div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <button class="btn-my-list" id="btn-my-list" title="My List">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    <span class="list-count" id="list-count">0</span>
+                </button>
+                <div class="language-selector">
+                    <svg class="globe-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                    <select id="language" aria-label="Language">
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="hi">हिन्दी</option>
+                    </select>
+                </div>
+                <a href="login.html" class="btn-signin" id="auth-link">Sign In</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Banner - Netflix landing style -->
+    <section class="hero" id="home">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Unlimited movies, TV shows and more.</h1>
+            <p class="hero-subtitle">Watch anywhere. Cancel anytime.</p>
+            <p class="hero-cta-text">Ready to watch? Enter your email to create or restart your membership.</p>
+            <form class="hero-form" id="hero-form">
+                <input type="email" class="hero-email" placeholder="Email address" required aria-label="Email address">
+                <button type="submit" class="btn-get-started">Get Started &gt;</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Movie Rows - Full width like Netflix -->
+    <main class="main-content">
+        <!-- Continue Watching -->
+        <section class="movie-section" id="continue-watching" style="display: none;">
+            <h2 class="section-title">Continue Watching</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="continue-watching-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+
+        <!-- My List -->
+        <section class="movie-section" id="my-list" style="display: none;">
+            <h2 class="section-title">My List</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="my-list-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+
+        <section class="movie-section" id="trending">
+            <h2 class="section-title">Trending Now</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="trending-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+
+        <section class="movie-section" id="popular">
+            <h2 class="section-title">Popular on Netflix</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="popular-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+
+        <section class="movie-section" id="top-rated">
+            <h2 class="section-title">Top Rated</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="top-rated-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+
+        <section class="movie-section" id="anime">
+            <h2 class="section-title">Anime</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="anime-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+
+        <section class="movie-section" id="action">
+            <h2 class="section-title">Action</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="action-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+
+        <section class="movie-section" id="thrillers">
+            <h2 class="section-title">Thrillers</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="thrillers-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+
+        <section class="movie-section" id="comedy">
+            <h2 class="section-title">Comedy</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="comedy-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+
+        <section class="movie-section" id="horror">
+            <h2 class="section-title">Horror</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="horror-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+
+        <section class="movie-section" id="romance">
+            <h2 class="section-title">Romance</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="romance-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+
+        <section class="movie-section" id="sci-fi">
+            <h2 class="section-title">Sci-Fi</h2>
+            <div class="movie-row">
+                <button class="scroll-btn scroll-left" aria-label="Scroll left">‹</button>
+                <div class="movie-container" id="sci-fi-container"></div>
+                <button class="scroll-btn scroll-right" aria-label="Scroll right">›</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Movie Details Modal -->
+    <div class="modal" id="movie-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">&times;</button>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="error-message" id="error-message"></div>
+
+    <script src="script.js"></script>
+    <script src="auth.js"></script>
+    <script>
+      (function () {
+        var authLink = document.getElementById('auth-link');
+        if (authLink && localStorage.getItem('isLoggedIn') === 'true') {
+          authLink.textContent = 'Sign Out';
+          authLink.href = 'login.html';
+          authLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'login.html';
+          });
+        }
+      })();
+    </script>
+</body>
+</html>

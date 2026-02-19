@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Clone - API Test Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #141414;
+            color: #ffffff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #e50914;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .test-section {
+            background: #1f1f1f;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e50914;
+        }
+        
+        .test-section h2 {
+            color: #e50914;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .test-item {
+            background: #2a2a2a;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #555;
+        }
+        
+        .test-item.passing {
+            border-left-color: #4caf50;
+        }
+        
+        .test-item.failing {
+            border-left-color: #f44336;
+        }
+        
+        .test-item.running {
+            border-left-color: #ff9800;
+        }
+        
+        .test-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .test-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status-pass {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .status-fail {
+            background: #f44336;
+            color: white;
+        }
+        
+        .status-running {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .test-details {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #b3b3b3;
+        }
+        
+        .test-details pre {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .test-error {
+            color: #f44336;
+            margin-top: 8px;
+        }
+        
+        .summary {
+            background: #1f1f1f;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .summary-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e50914;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #b3b3b3;
+            margin-top: 5px;
+        }
+        
+        .btn-run-tests {
+            background: #e50914;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.2s;
+        }
+        
+        .btn-run-tests:hover {
+            background: #f40612;
+        }
+        
+        .api-key-display {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        
+        .api-key-display strong {
+            color: #e50914;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Netflix Clone - API Test Suite</h1>
+        
+        <div class="summary" id="summary">
+            <h2>Test Summary</h2>
+            <div class="summary-stats">
+                <div class="stat">
+                    <div class="stat-value" id="total-tests">0</div>
+                    <div class="stat-label">Total Tests</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="passed-tests" style="color: #4caf50;">0</div>
+                    <div class="stat-label">Passed</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="failed-tests" style="color: #f44336;">0</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button class="btn-run-tests" onclick="runAllTests()">▶ Run All Tests</button>
+        </div>
+        
+        <div class="api-key-display">
+            <strong>API Key:</strong> <span id="api-key-display"></span>
+        </div>
+        
+        <p style="text-align: center; color: #b3b3b3; font-size: 0.9rem; margin-bottom: 20px;">
+            If tests show "Failed to fetch" or CORS errors, open this page via a local server (e.g. run <code>npx serve .</code> in the Netflix Clone folder and open the link shown).
+        </p>
+        
+        <div id="test-results"></div>
+    </div>
+    
+    <script>
+        // Import API key from script.js
+        const API_KEY = '6d4450af4e3eecc4a95e1fc28c31b4fc';
+        const BASE_URL = 'https://api.themoviedb.org/3';
+        const FETCH_TIMEOUT_MS = 15000;
+        
+        // Fetch with timeout so tests don't hang
+        async function fetchWithTimeout(url) {
+            const ctrl = new AbortController();
+            const id = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+            try {
+                const r = await fetch(url, { signal: ctrl.signal });
+                clearTimeout(id);
+                return r;
+            } catch (e) {
+                clearTimeout(id);
+                if (e.name === 'AbortError') throw new Error('Request timed out (15s)');
+                throw e;
+            }
+        }
+        
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0
+        };
+        
+        // Display API key (masked)
+        document.getElementById('api-key-display').textContent = 
+            API_KEY.substring(0, 8) + '...' + API_KEY.substring(API_KEY.length - 4);
+        
+        // Safe ID for test items (no colons or spaces - breaks CSS selectors)
+        function getTestId(name) {
+            return 't-' + name.replace(/\s+/g, '-').replace(/:/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+        }
+        
+        /**
+         * Create test item element
+         */
+        function createTestItem(name, status = 'running') {
+            const id = getTestId(name);
+            const div = document.createElement('div');
+            div.className = `test-item ${status}`;
+            div.dataset.testName = name;
+            div.innerHTML = `
+                <div class="test-name">
+                    ${name}
+                    <span class="test-status status-${status}">${status.toUpperCase()}</span>
+                </div>
+                <div class="test-details" id="${id}"></div>
+            `;
+            return div;
+        }
+        
+        /**
+         * Update test status
+         */
+        function updateTestStatus(name, status, details = '', error = '') {
+            const testItem = document.querySelector(`[data-test-name="${name}"]`);
+            if (!testItem) return;
+            testItem.className = `test-item ${status}`;
+            testItem.querySelector('.test-status').textContent = status.toUpperCase();
+            testItem.querySelector('.test-status').className = `test-status status-${status}`;
+            
+            const detailsDiv = testItem.querySelector('.test-details');
+            if (detailsDiv) {
+                if (details) detailsDiv.innerHTML = `<pre>${escapeHtml(details)}</pre>`;
+                if (error) detailsDiv.innerHTML += `<div class="test-error">❌ Error: ${escapeHtml(error)}</div>`;
+            }
+            
+            if (status === 'passing') testResults.passed++;
+            if (status === 'failing') testResults.failed++;
+            testResults.total++;
+            updateSummary();
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        /**
+         * Update summary stats
+         */
+        function updateSummary() {
+            document.getElementById('total-tests').textContent = testResults.total;
+            document.getElementById('passed-tests').textContent = testResults.passed;
+            document.getElementById('failed-tests').textContent = testResults.failed;
+        }
+        
+        /**
+         * Test 1: API Key Validation
+         */
+        async function testAPIKey() {
+            const testName = 'Test 1: API Key Validation';
+            const testDiv = createTestItem(testName);
+            document.getElementById('test-results').appendChild(testDiv);
+            
+            try {
+                const response = await fetchWithTimeout(`${BASE_URL}/configuration?api_key=${API_KEY}`);
+                const data = await response.json();
+                
+                if (response.ok && data.images) {
+                    updateTestStatus(testName, 'passing', 
+                        `✅ API Key is valid\nBase URL: ${data.images.base_url}\nSecure Base URL: ${data.images.secure_base_url}`);
+                } else if (response.status === 401) {
+                    updateTestStatus(testName, 'failing', '', 'Invalid API Key - Unauthorized');
+                } else {
+                    updateTestStatus(testName, 'failing', '', `Unexpected response: ${response.status}`);
+                }
+            } catch (error) {
+                updateTestStatus(testName, 'failing', '', error.message);
+            }
+        }
+        
+        /**
+         * Test 2: Trending Movies Endpoint
+         */
+        async function testTrendingEndpoint() {
+            const testName = 'Test 2: Trending Movies Endpoint';
+            const testDiv = createTestItem(testName);
+            document.getElementById('test-results').appendChild(testDiv);
+            
+            try {
+                const response = await fetchWithTimeout(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`);
+                const data = await response.json();
+                
+                if (response.ok && data.results && Array.isArray(data.results)) {
+                    const movies = data.results.slice(0, 3);
+                    const movieList = movies.map(m => `- ${m.title} (${m.vote_average}/10)`).join('\n');
+                    updateTestStatus(testName, 'passing', 
+                        `✅ Successfully fetched ${data.results.length} trending movies\n\nSample movies:\n${movieList}`);
+                } else {
+                    updateTestStatus(testName, 'failing', '', 'Invalid response structure');
+                }
+            } catch (error) {
+                updateTestStatus(testName, 'failing', '', error.message);
+            }
+        }
+        
+        /**
+         * Test 3: Popular Movies Endpoint
+         */
+        async function testPopularEndpoint() {
+            const testName = 'Test 3: Popular Movies Endpoint';
+            const testDiv = createTestItem(testName);
+            document.getElementById('test-results').appendChild(testDiv);
+            
+            try {
+                const response = await fetchWithTimeout(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
+                const data = await response.json();
+                
+                if (response.ok && data.results && Array.isArray(data.results)) {
+                    updateTestStatus(testName, 'passing', 
+                        `✅ Successfully fetched ${data.results.length} popular movies\nPage: ${data.page}/${data.total_pages}\nTotal Results: ${data.total_results}`);
+                } else {
+                    updateTestStatus(testName, 'failing', '', 'Invalid response structure');
+                }
+            } catch (error) {
+                updateTestStatus(testName, 'failing', '', error.message);
+            }
+        }
+        
+        /**
+         * Test 4: Top Rated Movies Endpoint
+         */
+        async function testTopRatedEndpoint() {
+            const testName = 'Test 4: Top Rated Movies Endpoint';
+            const testDiv = createTestItem(testName);
+            document.getElementById('test-results').appendChild(testDiv);
+            
+            try {
+                const response = await fetchWithTimeout(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}`);
+                const data = await response.json();
+                
+                if (response.ok && data.results && Array.isArray(data.results)) {
+                    const topMovie = data.results[0];
+                    updateTestStatus(testName, 'passing', 
+                        `✅ Successfully fetched ${data.results.length} top rated movies\n\nTop Movie:\nTitle: ${topMovie.title}\nRating: ${topMovie.vote_average}/10\nVotes: ${topMovie.vote_count}`);
+                } else {
+                    updateTestStatus(testName, 'failing', '', 'Invalid response structure');
+                }
+            } catch (error) {
+                updateTestStatus(testName, 'failing', '', error.message);
+            }
+        }
+        
+        /**
+         * Test 5: Genre Discovery (Action)
+         */
+        async function testGenreDiscovery() {
+            const testName = 'Test 5: Genre Discovery (Action)';
+            const testDiv = createTestItem(testName);
+            document.getElementById('test-results').appendChild(testDiv);
+            
+            try {
+                const response = await fetchWithTimeout(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28&sort_by=popularity.desc`);
+                const data = await response.json();
+                
+                if (response.ok && data.results && Array.isArray(data.results)) {
+                    updateTestStatus(testName, 'passing', 
+                        `✅ Successfully fetched ${data.results.length} Action movies\nTotal Pages: ${data.total_pages}\nTotal Results: ${data.total_results}`);
+                } else {
+                    updateTestStatus(testName, 'failing', '', 'Invalid response structure');
+                }
+            } catch (error) {
+                updateTestStatus(testName, 'failing', '', error.message);
+            }
+        }
+        
+        /**
+         * Test 6: Movie Details Endpoint
+         */
+        async function testMovieDetails() {
+            const testName = 'Test 6: Movie Details Endpoint';
+            const testDiv = createTestItem(testName);
+            document.getElementById('test-results').appendChild(testDiv);
+            
+            try {
+                // Use a popular movie ID (The Dark Knight)
+                const movieId = 155;
+                const response = await fetchWithTimeout(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}`);
+                const data = await response.json();
+                
+                if (response.ok && data.title) {
+                    updateTestStatus(testName, 'passing', 
+                        `✅ Successfully fetched movie details\nTitle: ${data.title}\nRelease Date: ${data.release_date}\nRuntime: ${data.runtime} min\nRating: ${data.vote_average}/10\nGenres: ${data.genres.map(g => g.name).join(', ')}`);
+                } else {
+                    updateTestStatus(testName, 'failing', '', 'Invalid response structure');
+                }
+            } catch (error) {
+                updateTestStatus(testName, 'failing', '', error.message);
+            }
+        }
+        
+        /**
+         * Test 7: Search Endpoint
+         */
+        async function testSearchEndpoint() {
+            const testName = 'Test 7: Search Endpoint';
+            const testDiv = createTestItem(testName);
+            document.getElementById('test-results').appendChild(testDiv);
+            
+            try {
+                const query = 'batman';
+                const response = await fetchWithTimeout(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                if (response.ok && data.results && Array.isArray(data.results)) {
+                    const results = data.results.slice(0, 3);
+                    const resultList = results.map(m => `- ${m.title} (${m.release_date})`).join('\n');
+                    updateTestStatus(testName, 'passing', 
+                        `✅ Search query "${query}" returned ${data.results.length} results\nTotal Pages: ${data.total_pages}\n\nSample results:\n${resultList}`);
+                } else {
+                    updateTestStatus(testName, 'failing', '', 'Invalid response structure');
+                }
+            } catch (error) {
+                updateTestStatus(testName, 'failing', '', error.message);
+            }
+        }
+        
+        /**
+         * Test 8: Image URLs (validate API returns correct image paths)
+         * We don't fetch the images (CORS can block that); we only check URLs are built correctly.
+         */
+        async function testImageURLs() {
+            const testName = 'Test 8: Image URLs Validation';
+            const testDiv = createTestItem(testName);
+            document.getElementById('test-results').appendChild(testDiv);
+            
+            try {
+                const response = await fetchWithTimeout(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`);
+                const data = await response.json();
+                
+                if (response.ok && data.results && data.results.length > 0) {
+                    const movie = data.results[0];
+                    const base = 'https://image.tmdb.org/t/p/';
+                    const posterUrl = movie.poster_path ? `${base}w500${movie.poster_path}` : '';
+                    const backdropUrl = movie.backdrop_path ? `${base}original${movie.backdrop_path}` : '';
+                    
+                    const hasPoster = !!movie.poster_path;
+                    const hasBackdrop = !!movie.backdrop_path;
+                    const posterValid = posterUrl.startsWith(base) && posterUrl.length > base.length;
+                    const backdropValid = backdropUrl.startsWith(base) && backdropUrl.length > base.length;
+                    
+                    const pass = hasPoster && hasBackdrop && posterValid && backdropValid;
+                    updateTestStatus(testName, pass ? 'passing' : 'failing',
+                        `✅ API returns valid image paths for: ${movie.title}\n\nPoster (w500): ${posterUrl || 'none'}\nBackdrop (original): ${backdropUrl || 'none'}\n\n(Image URLs are correct; loading them in-browser can be blocked by CORS when opening from file.)`);
+                } else {
+                    updateTestStatus(testName, 'failing', '', 'Could not fetch movies to validate image paths');
+                }
+            } catch (error) {
+                updateTestStatus(testName, 'failing', '', error.message);
+            }
+        }
+        
+        /**
+         * Test 9: Error Handling (Invalid API Key)
+         */
+        async function testErrorHandling() {
+            const testName = 'Test 9: Error Handling';
+            const testDiv = createTestItem(testName);
+            document.getElementById('test-results').appendChild(testDiv);
+            
+            try {
+                const invalidKey = 'invalid_key_12345';
+                const response = await fetchWithTimeout(`${BASE_URL}/movie/popular?api_key=${invalidKey}`);
+                const data = await response.json();
+                
+                if (response.status === 401 || (data.status_code && data.status_code === 7)) {
+                    updateTestStatus(testName, 'passing', 
+                        `✅ Error handling works correctly\nStatus: ${response.status}\nError Message: ${data.status_message || 'Unauthorized'}`);
+                } else {
+                    updateTestStatus(testName, 'failing', '', 'Error handling not working as expected');
+                }
+            } catch (error) {
+                updateTestStatus(testName, 'failing', '', error.message);
+            }
+        }
+        
+        /**
+         * Test 10: Response Data Structure
+         */
+        async function testDataStructure() {
+            const testName = 'Test 10: Response Data Structure';
+            const testDiv = createTestItem(testName);
+            document.getElementById('test-results').appendChild(testDiv);
+            
+            try {
+                const response = await fetchWithTimeout(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`);
+                const data = await response.json();
+                
+                if (response.ok && data.results && data.results.length > 0) {
+                    const movie = data.results[0];
+                    const requiredFields = ['id', 'title', 'poster_path', 'backdrop_path', 'vote_average', 'overview'];
+                    const missingFields = requiredFields.filter(field => !(field in movie));
+                    
+                    if (missingFields.length === 0) {
+                        updateTestStatus(testName, 'passing', 
+                            `✅ All required fields present\nFields checked: ${requiredFields.join(', ')}\n\nSample movie structure:\nID: ${movie.id}\nTitle: ${movie.title}\nHas Poster: ${!!movie.poster_path}\nHas Backdrop: ${!!movie.backdrop_path}\nHas Overview: ${!!movie.overview}`);
+                    } else {
+                        updateTestStatus(testName, 'failing', '', `Missing fields: ${missingFields.join(', ')}`);
+                    }
+                } else {
+                    updateTestStatus(testName, 'failing', '', 'Invalid response structure');
+                }
+            } catch (error) {
+                updateTestStatus(testName, 'failing', '', error.message);
+            }
+        }
+        
+        /**
+         * Run all tests
+         */
+        async function runAllTests() {
+            // Reset results
+            testResults = { total: 0, passed: 0, failed: 0 };
+            document.getElementById('test-results').innerHTML = '';
+            updateSummary();
+            
+            // Run tests sequentially
+            await testAPIKey();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testTrendingEndpoint();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testPopularEndpoint();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testTopRatedEndpoint();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testGenreDiscovery();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testMovieDetails();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testSearchEndpoint();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testImageURLs();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testErrorHandling();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testDataStructure();
+            
+            // Final summary
+            setTimeout(() => {
+                const summary = testResults.failed === 0 
+                    ? '🎉 All tests passed! API integration is working correctly.'
+                    : `⚠️ ${testResults.failed} test(s) failed. Please check the details above.`;
+                
+                alert(summary);
+            }, 500);
+        }
+        
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(runAllTests, 500);
+        });
+    </script>
+</body>
+</html>
