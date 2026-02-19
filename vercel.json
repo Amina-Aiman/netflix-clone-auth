@@ -13,11 +13,11 @@
     { "src": "/api/health", "dest": "/api/health.js" },
     { "src": "/api/login", "dest": "/api/login.js" },
     { "src": "/api/register", "dest": "/api/register.js" },
+    { "src": "/", "dest": "/login.html" },
     { "src": "/login.html", "dest": "/login.html" },
     { "src": "/register.html", "dest": "/register.html" },
     { "src": "/index.html", "dest": "/index.html" },
     { "handle": "filesystem" },
-    { "src": "/", "dest": "/login.html" },
     { "src": "/(.*)", "dest": "/$1" }
   ]
 }
