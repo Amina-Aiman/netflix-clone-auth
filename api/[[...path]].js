@@ -1,16 +1,16 @@
-// Vercel serverless function wrapper for Express backend
+// Vercel catch-all: handles /api, /api/login, /api/register, /api/health
 const app = require('../backend/server.js');
 const db = require('../backend/db');
 
 // Strip /api prefix so Express sees /login not /api/login
 app.use((req, res, next) => {
   if (req.url.startsWith('/api')) {
-    req.url = req.url.slice(4) || '/'; // /api/login -> /login, /api -> /
+    req.url = req.url.slice(4) || '/';
   }
   next();
 });
 
-// Initialize database on first request (lazy init for Vercel)
+// Lazy DB init for serverless
 let dbInitPromise = null;
 app.use(async (req, res, next) => {
   if (!dbInitPromise) {
@@ -22,13 +22,10 @@ app.use(async (req, res, next) => {
   }
   try {
     if (dbInitPromise) await dbInitPromise;
-  } catch (e) {
-    // ignore
-  }
+  } catch (e) {}
   next();
 });
 
-// Catch-all error handler so we always return JSON, never crash
 app.use((err, req, res, next) => {
   console.error('API error:', err);
   res.status(500).json({ success: false, message: 'Server error. Please try again.' });
